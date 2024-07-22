@@ -1,0 +1,106 @@
+[cluster1]
+title = "cluster1"
+prov-orchestrator = "onpremise"
+
+db-servers-hosts = "10.10.2.10:3306,10.10.2.11:3306,10.10.2.12:3306"
+db-servers-prefered-master = "10.10.2.10:3306,10.10.2.11:3306"
+db-servers-credential = "ha_user:123456"
+db-servers-connect-timeout = 1
+replication-credential = "repl:123456"
+
+##############
+## TOPOLOGY ##
+##############
+
+replication-multi-master = false
+replication-multi-tier-slave = false
+
+# backup-restic = true
+backup-physical-type = "mariabackup"
+backup-logical-type = "mysqldump"
+backup-mysqlbinlog-path = "/usr/local/mysql/bin/mysqlbinlog"
+backup-mysqlclient-path = "/usr/local/mysql/bin/mysql"
+
+####################
+##  CLUSTER LOGS  ##
+####################
+
+#log-failed-election  = "INFO"
+#log-level = 3
+log-failed-election  = "DEBUG"
+log-level = 5
+log-rotate-max-age = 7
+log-rotate-max-backup = 7
+log-rotate-max-size = 5
+
+##############
+## FAILOVER ##
+##############
+failover-mode = "automatic"
+failover-pre-script = "/etc/replication-manager/script/vip_down.sh"
+failover-post-script = "/etc/replication-manager/script/vip_up.sh"
+
+## Slaves will re enter with read-only
+
+failover-readonly-state = true
+failover-superreadonly-state = true
+#failover-semisync-state = true
+failover-event-scheduler = false
+failover-event-status = false
+
+failover-falsepositive-ping-counter = 5
+
+failover-limit = 0
+failover-time-limit = 60
+failover-at-sync = false
+failover-max-slave-delay = 30
+failover-restart-unsafe = false
+
+################
+## SWITCHOVER ##
+################
+
+switchover-wait-kill = 5000
+switchover-wait-trx = 10
+switchover-wait-write-query = 10
+switchover-at-equal-gtid = false
+switchover-at-sync = true
+switchover-max-slave-delay = 30
+
+############
+## REJOIN ##
+############
+
+autorejoin = true
+autorejoin-script = ""
+autorejoin-semisync = true
+autorejoin-backup-binlog = true
+autorejoin-flashback = false
+autorejoin-mysqldump = false
+
+####################
+## CHECKS & FORCE ##
+####################
+
+check-replication-filters = true
+check-binlog-filters = true
+check-replication-state = true
+check-replication-errant-trx = false
+
+force-slave-heartbeat= false
+force-slave-heartbeat-retry = 5
+force-slave-heartbeat-time = 3
+## 改为自动激活slave 的 GTID 与 半同步
+force-slave-gtid-mode = true
+force-slave-semisync = true
+force-slave-failover-readonly-state = false
+force-binlog-row = false
+force-binlog-annotate = false
+force-binlog-slowqueries = false
+force-binlog-compress = false
+force-binlog-checksum = false
+force-inmemory-binlog-cache-size = false
+force-disk-relaylog-size-limit = false
+force-disk-relaylog-size-limit-size = 1000000000
+force-sync-binlog = false
+force-sync-innodb = false

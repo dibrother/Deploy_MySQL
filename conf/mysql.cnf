@@ -1,0 +1,51 @@
+###########  [必填] 全局参数/单机部署参数 ###########
+# 本机IP
+IPADDR=10.10.2.11
+# MySQL 安装版本，会根据配置去 lib 目录下进行匹配搜索对应版本的 .tar.xz | .tar.gz 的压缩文件
+MYSQL_VERSION='8.0'
+# 数据目录存储路径
+MYSQL_DATA_DIR=/data
+# 自定义端口
+MYSQL_PORT=3310
+# 默认获取服务器物理内存，默认使用全部内存去计算，可自定义设置为 MEMORY_ALLLOW_GB=2
+MEMORY_ALLLOW_GB=`free -g|grep Mem|awk '{print $2}'`
+# 密码不能使用双引号包裹,设置root@localhost的密码
+INIT_PASSWORD='Yq@test#123'
+# 创建一个超级用户 super_admin@'%'
+SUPER_USER='super_admin'
+SUPER_PASSWORD='123456'
+# 主从复制用户 'repl'@'%'
+REPL_USER='repl'
+REPL_PASSWORD='123456'
+# 系统管理用户 'sys_manager'@'127.0.0.1'，用于进行备份管理、慢日志管理等
+SYS_MANAGER_USER='sys_manager'
+SYS_MANAGER_PWD='SysManager^20240101'
+
+########## [主从模式] 主从模式需要配置的参数 ##########
+# 服务器组
+SERVER_GROUP='10.10.2.10,10.10.2.11,10.10.2.13'
+SERVER_PORT=22
+
+########## [高可用模式] 主从高可用模式需要配置的参数 ###
+# VIP，必须要有VIP
+VIP="10.10.2.111"
+# 网卡名称，可使用 [ip -4 a] 查看
+NET_WORK_CARD_NAME='ens160'
+# 高可用组件使用的用户，会在主库创建
+HA_USER='ha_monitor'
+HA_PASSWORD='yq@ABC^123#forha'
+# 高可用组件web界面登陆密码
+HA_HTTP_PASSWORD='repman'
+# 高可用组件的web端口，默认 10001
+HA_PORT=10001
+
+#######  dingding通知配置[可选修改]
+DINGDING_SWITCH=0
+WEBHOOK_URL='https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxxxxxxxxxxx'
+SECRET='xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+# 支持 text/markdown
+SEND_TYPE="markdown"
+# IS_AT_ALL 中设置任何值代表执行 true ,默认为false
+IS_AT_ALL="true"
+# 设置电话号码会@那个人,这个设置值的话 -at_all 参数不能配置"
+AT_MOBILES=""
