@@ -322,3 +322,15 @@ function do_set_Jemalloc(){
         print_info "jemalloc 已被安装..."
     fi
 }
+
+# 检查内核
+function check_kernel(){
+    local kernel_name=$(uname -s)
+    if [[ "${kernel_name}" == "Linux" ]]; then
+        print_info "kernel = ${kernel_name}"
+        return 0
+    else
+        print_error "kernel = ${kernel_name}, not supported, Linux only"
+        exit 1
+    fi
+}
