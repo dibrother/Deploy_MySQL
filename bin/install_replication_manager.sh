@@ -105,8 +105,9 @@ config_vip_drift_scripts(){
     cp $PARENT_DIR/lib/dingtalk_send /etc/replication-manager/script
     
 
-    #sed -i 's/mysql_user=.*/mysql_user='$(echo \'$HA_USER\')'/' ${REPLICATION_CURRENT_DIR}/vip_down.sh
-    #sed -i 's/mysql_password=.*/mysql_password='$(echo \'$HA_PASSWORD\')'/' ${REPLICATION_CURRENT_DIR}/vip_down.sh
+    sed -i 's/mysql_user=.*/mysql_user='$(echo \'$HA_USER\')'/' ${REPLICATION_CURRENT_DIR}/vip_down.sh
+    sed -i 's/mysql_password=.*/mysql_password='$(echo \'$HA_PASSWORD\')'/' ${REPLICATION_CURRENT_DIR}/vip_down.sh
+    sed -i 's%mysql_bin_dir=.*%mysql_bin_dir='$(echo \'$MYSQL_BIN_DIR\')'%' ${REPLICATION_CURRENT_DIR}/vip_down.sh
     sed -i 's/interface=.*/interface='$(echo $NET_WORK_CARD_NAME)'/' ${REPLICATION_CURRENT_DIR}/vip_down.sh
     sed -i 's/vip=.*/vip='$(echo $VIP)'/' ${REPLICATION_CURRENT_DIR}/vip_down.sh
     sed -i 's/ssh_options=.*/ssh_options='$(echo \'-p$SERVER_PORT\')'/' ${REPLICATION_CURRENT_DIR}/vip_down.sh

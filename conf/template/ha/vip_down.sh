@@ -8,8 +8,9 @@ old_port=$3
 new_port=$4
 
 # 用于修改半同步参数
-#mysql_user='ha_monitor'
-#mysql_password='yq@ABC^123#forha'
+mysql_user='ha_monitor'
+mysql_password='123456'
+mysql_bin_dir=/usr/local/mysql/bin
 
 emailaddress="email@example.com"
 sendmail=0
@@ -121,27 +122,20 @@ vip_status() {
 }
 
 change_mysql_params(){
-  MYSQL_STATUS=`/usr/local/mysql/bin/mysqladmin -h${orig_master} -u${mysql_user} -p${mysql_password} -P${old_port} ping|grep 'mysqld is alive'|wc -l`
+  local MYSQL_STATUS=`$mysql_bin_dir/mysqladmin -h${orig_master} -u${mysql_user} -p${mysql_password} -P${old_port} ping|grep 'mysqld is alive'|wc -l`
   if [ ${MYSQL_STATUS} -eq 1 ];then
-    echo "源库存活,则修改源库参数为只读,且修改半同步参数..."
-    mysql_version=`/usr/local/mysql/bin/mysql -h${orig_master} -u${mysql_user} -p${mysql_password} -P${old_port} -Ne "select version()"`
-    if [[ ${mysql_version} > "8.0.25" ]];then
-      echo "源库存活,则修改源库参数为只读,且修改半同步参数..."
-      /usr/local/mysql/bin/mysql -h${orig_master} -u${mysql_user} -p${mysql_password} -P${old_port} -e "set global read_only=1;set global super_read_only=1;set global rpl_semi_sync_source_enabled=0;set global rpl_semi_sync_replica_enabled=1;"
-    else
-      echo "源库存活,则修改源库参数为只读,且修改半同步参数..."
-      /usr/local/mysql/bin/mysql -h${orig_master} -u${mysql_user} -p${mysql_password} -P${old_port} -e "set global read_only=1;set global super_read_only=1;set global rpl_semi_sync_master_enabled=0;set global rpl_semi_sync_slave_enabled=1;"   
-    fi
+    echo "源库存活,则修改源库参数为只读..."
+    $mysql_bin_dir/mysql -h${orig_master} -u${mysql_user} -p${mysql_password} -P${old_port} -e "set global read_only=1;set global super_read_only=1"
   fi
 }
 
 print_message "Note" "Master is dead, failover"
 # make sure the vip is not available 
-if vip_status; then 
+if vip_status; then
+    change_mysql_params
     if vip_stop; then
         echo "`date +'%Y-%m-%d %T'` $vip is removed from ${orig_master}."
         print_message "Note" "$vip is removed from ${orig_master}."
-        #change_mysql_params
         dingding_note "数据库切换" "$vip is removed from ${orig_master}."
         #if [ $sendmail -eq 1 ]; then mail -s "$vip is removed from orig_master." "$emailaddress" < /dev/null &> /dev/null  ; fi
     else

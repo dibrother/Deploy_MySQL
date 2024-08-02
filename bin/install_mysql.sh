@@ -17,11 +17,31 @@ function install_dependency_packages(){
   local package_manager=$(detect_package_manager)
   if [ $package_manager = "yum" ];then
      check_and_install_pkg libaio
-     if [ ! -f /usr/lib64/libncurses.so.5 ]; then
-       print_error "请检查并设置 libncurses.so.5，可能你需要根据实际情况执行： 
-       ln -s /usr/lib64/libncurses.so.6.1 /usr/lib64/libncurses.so.5
-       ln -s /usr/lib64/libtinfo.so.6.1 /usr/lib64/libtinfo.so.5"
-       exit 1
+     if [ ! -e /usr/lib64/libncurses.so.5 ]; then
+       print_warning "不存在 libncurses.so.5，尝试修正创建软链..." 
+       local is_exists=$(ls /usr/lib64/libncurses.so.6.*|wc -l)
+       if [ "$is_exists" -eq 1 ];then
+          local fname=$(basename "$(ls /usr/lib64/libncurses.so.6.*)")
+          print_warning "尝试修正创建软链执行:ln -s /usr/lib64/$fname /usr/lib64/libncurses.so.5 ..." 
+          ln -s /usr/lib64/$fname /usr/lib64/libncurses.so.5
+       else
+         print_error "请检查并设置 libncurses.so.5，可能你需要根据实际情况执行： 
+        ln -s /usr/lib64/libncurses.so.6.1 /usr/lib64/libncurses.so.5
+        ln -s /usr/lib64/libtinfo.so.6.1 /usr/lib64/libtinfo.so.5"
+        exit 1
+       fi
+
+       local is_exists=$(ls /usr/lib64/libtinfo.so.6.*|wc -l)
+       if [ "$is_exists" -eq 1 ];then
+          local fname=$(basename "$(ls /usr/lib64/libtinfo.so.6.*)")
+          print_warning "尝试修正创建软链执行:ln -s /usr/lib64/$fname /usr/lib64/libtinfo.so.5 ..." 
+          ln -s /usr/lib64/$fname /usr/lib64/libtinfo.so.5
+       else
+          print_error "请检查并设置 libncurses.so.5，可能你需要根据实际情况执行： 
+          ln -s /usr/lib64/libncurses.so.6.1 /usr/lib64/libncurses.so.5
+          ln -s /usr/lib64/libtinfo.so.6.1 /usr/lib64/libtinfo.so.5"
+          exit 1
+       fi
      fi
     elif [ $package_manager = "apt-get" ];then
       check_and_install_pkg libaio1
